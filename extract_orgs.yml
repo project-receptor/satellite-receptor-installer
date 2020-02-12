@@ -1,0 +1,46 @@
+- name: Get organization detail
+  uri:
+    url: "{{ satellite_url }}katello/api/organizations/{{ org_id }}"
+    user: "{{ satellite_user }}"
+    password: "{{ satellite_password }}"
+    return_content: yes
+    validate_certs: no
+    force_basic_auth: yes
+  register: sat_org_detail
+- name: Extract x.509 certificate and key
+  set_fact:
+    sat_x509_cert: "{{ sat_org_detail.json | json_query('owner_details.upstreamConsumer.idCert.cert') }}"
+    sat_x509_key: "{{ sat_org_detail.json | json_query('owner_details.upstreamConsumer.idCert.key') }}"
+- name: Get organization subscriptions
+  uri:
+    url: "{{ satellite_url }}katello/api/organizations/{{ org_id }}/subscriptions"
+    user: "{{ satellite_user }}"
+    password: "{{ satellite_password }}"
+    return_content: yes
+    validate_certs: no
+    force_basic_auth: yes
+  register: sat_org_subscriptions
+- name: Extract Red Hat account ID
+  set_fact:
+    sat_account_id: "{{ sat_org_subscriptions.json | json_query('results[0].account_number') }}"
+- name: "Make configuration directory for account {{ sat_account_id }}"
+  file:
+    path: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}"
+    state: directory
+    mode: 0755
+- name: "Write x.509 certificate for account {{ sat_account_id }}"
+  template:
+    dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/cert.pem"
+    mode: 0644
+    src: cert.pem.j2
+- name: "Write x.509 key for account {{ sat_account_id }}"
+  template:
+    dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/key.pem"
+    mode: 0400
+    src: key.pem.j2
+- name: "Write Receptor configuration for account {{ sat_account_id }}"
+  template:
+    dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/receptor.conf"
+    mode: 0644
+    src: receptor.conf.j2
+
