@@ -1,0 +1,82 @@
+---
+- name: Preflight checks
+  block:
+    - name: Can connect to the Satellite with the given username/password
+      uri:
+        url: "{{ satellite_url }}api/status"
+        user: "{{ satellite_user }}"
+        password: "{{ satellite_password }}"
+    - name: User has permissions to read organizations and run Ansible playbooks
+      debug:
+        msg: "FIXME"
+    - name: Can connect to cloud.redhat.com
+      debug:
+        msg: "FIXME"
+- name: Install Receptor and Satellite Plugin RPMs
+  block:
+  - name: Ensure RPM repository is configured and enabled
+    debug:
+      msg: "FIXME"
+  - name: Install Receptor and Satellite Plugin RPMs
+    debug:
+      msg: "FIXME"
+    #dnf:
+    #  name: receptor-satellite
+    #  state: installed
+    #  update_cache: yes
+- name: Extract account information from Satellite and write configs
+  block:
+  - name: List all organizations in Satellite
+    uri:
+      url: "{{ satellite_url }}katello/api/organizations"
+      user: "{{ satellite_user }}"
+      password: "{{ satellite_password }}"
+      return_content: yes
+      validate_certs: no
+      force_basic_auth: yes
+    register: sat_orgs_json
+  - name: Extract organization configuration per account and save to disk
+    include_tasks: extract_orgs.yml
+    loop: "{{ sat_orgs_json.json | json_query('results[*].id')}}"
+    loop_control:
+      loop_var: org_id
+  tags: query_satellite
+- name: Register Satellite and Receptor with Sources
+  block:
+  - name: Gather installed account dirs
+    find:
+      file_type: directory
+      paths: "{{ receptor_config_dir }}"
+      patterns: "rh_*"
+    register: account_dirs_full_path
+  - name: Extract account dirs
+    set_fact:
+      account_dirs: "{{ installed_account_dirs | json_query('files[*].path') | map('basename') | list }}"
+  - name: Identify Satellite ID from Satellite
+    uri: 
+      url: "{{ satellite_url }}api/settings?search=name%20%3D%20instance_id"
+      user: "{{ satellite_user }}"
+      password: "{{ satellite_password }}"
+      return_content: yes
+      validate_certs: no
+      force_basic_auth: yes
+    register: satellite_uuid_json
+  - name: Extract Satellite ID from result
+    set_fact:
+      satellite_uuid: "{{ satellite_uuid_json | json_query('results[0].value') }}"
+  - name: Set up Source with c.rh.c for each account
+    include_tasks: register_with_sources.yml
+    loop: "{{ accounts_dirs }}"
+    loop_control:
+      loop_var: account_dir
+- name: Create Receptor systemd unit files per account and start them
+  block:
+  - name: Generate template unit file
+    template:
+      src: receptor@.service.j2
+      dest: /etc/systemd/system/receptor@.service
+  - name: Enable Receptor systemd units
+    systemd:
+      unit: "receptor@{{ item }}.service"
+      enabled: yes
+    loop: "{{ account_dirs }}"

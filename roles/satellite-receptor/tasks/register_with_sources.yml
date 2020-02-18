@@ -1,3 +1,4 @@
+---
 - name: Extract node ID from configuration
   debug:
     msg: "FIXME"
@@ -9,9 +10,9 @@
     client_key: "{{ receptor_config_dir }}/rh_{{ account_dir }}/key.pem"
     method: "POST"
     body:
-      name: "Satellite {{ satellite_id }}"
+      name: "Satellite {{ satellite_uuid }}"
       source_type_id: "{{ source_type_id }}"
-      source_ref: "{{ satellite_id }}"
+      source_ref: "{{ satellite_uuid }}"
     return_content: yes
   register: source_create_response
 - name: Add endpoint to Source

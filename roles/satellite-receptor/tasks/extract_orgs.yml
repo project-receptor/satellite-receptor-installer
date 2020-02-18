@@ -1,3 +1,4 @@
+---
 - name: Get organization detail
   uri:
     url: "{{ satellite_url }}katello/api/organizations/{{ org_id }}"
