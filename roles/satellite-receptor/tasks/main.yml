@@ -19,8 +19,9 @@
     debug:
       msg: "FIXME"
   - name: Install Receptor and Satellite Plugin RPMs
-    debug:
-      msg: "FIXME"
+    yum:
+      name: "{{ receptor_packages }}"
+      state: installed
     #dnf:
     #  name: receptor-satellite
     #  state: installed
