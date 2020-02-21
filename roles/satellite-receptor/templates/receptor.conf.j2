@@ -1,1 +1,13 @@
-# FIXME
+[plugin_receptor_satellite]
+username = {{ satellite_user }}
+password = {{ satellite_password }}
+url = {{ satellite_url }}
+ca_file = {{ satellite_ca_file }}
+
+[auth]
+ssl_cert = {{ receptor_config_dir }}/rh_{{ sat_account_id }}/cert.pem
+ssl_key = {{ receptor_config_dir }}/rh_{{ sat_account_id }}/key.pem
+
+[node]
+# TODO?: Make this configurable?
+peers = wss://cert.cloud.redhat.com/wss/receptor-controller/gateway

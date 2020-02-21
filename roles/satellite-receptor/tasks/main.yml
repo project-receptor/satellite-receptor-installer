@@ -5,6 +5,7 @@
       uri:
         url: "{{ satellite_url }}api/status"
         user: "{{ satellite_user }}"
+        force_basic_auth: true
         password: "{{ satellite_password }}"
     - name: User has permissions to read organizations and run Ansible playbooks
       debug:
@@ -18,8 +19,9 @@
     debug:
       msg: "FIXME"
   - name: Install Receptor and Satellite Plugin RPMs
-    debug:
-      msg: "FIXME"
+    yum:
+      name: "{{ receptor_packages }}"
+      state: installed
     #dnf:
     #  name: receptor-satellite
     #  state: installed
@@ -51,7 +53,7 @@
     register: account_dirs_full_path
   - name: Extract account dirs
     set_fact:
-      account_dirs: "{{ installed_account_dirs | json_query('files[*].path') | map('basename') | list }}"
+      account_dirs: "{{ account_dirs_full_path | json_query('files[*].path') | map('basename') | list }}"
   - name: Identify Satellite ID from Satellite
     uri: 
       url: "{{ satellite_url }}api/settings?search=name%20%3D%20instance_id"
@@ -63,10 +65,10 @@
     register: satellite_uuid_json
   - name: Extract Satellite ID from result
     set_fact:
-      satellite_uuid: "{{ satellite_uuid_json | json_query('results[0].value') }}"
+      satellite_uuid: "{{ satellite_uuid_json | json_query('json.results[0].value') }}"
   - name: Set up Source with c.rh.c for each account
     include_tasks: register_with_sources.yml
-    loop: "{{ accounts_dirs }}"
+    loop: "{{ account_dirs }}"
     loop_control:
       loop_var: account_dir
 - name: Create Receptor systemd unit files per account and start them
@@ -75,8 +77,12 @@
     template:
       src: receptor@.service.j2
       dest: /etc/systemd/system/receptor@.service
+  - name: Reload systemd units
+    systemd:
+      daemon_reload: yes
   - name: Enable Receptor systemd units
     systemd:
       unit: "receptor@{{ item }}.service"
       enabled: yes
+      state: started
     loop: "{{ account_dirs }}"

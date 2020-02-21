@@ -3,4 +3,4 @@ Description=Receptor Node for %i
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/receptor -c {{receptor_config_dir}}/%i/receptor.conf -d {{receptor_data_dir}}/%i
+ExecStart=/usr/bin/receptor --node-id %i -c {{receptor_config_dir}}/%i/receptor.conf -d {{receptor_data_dir}}/%i node
