@@ -6,6 +6,7 @@
         url: "{{ satellite_url }}api/status"
         user: "{{ satellite_user }}"
         force_basic_auth: true
+        validate_certs: "{{ satellite_validate_certs }}"
         password: "{{ satellite_password }}"
     - name: User has permissions to read organizations and run Ansible playbooks
       debug:
@@ -22,10 +23,7 @@
     yum:
       name: "{{ receptor_packages }}"
       state: installed
-    #dnf:
-    #  name: receptor-satellite
-    #  state: installed
-    #  update_cache: yes
+    become: yes
 - name: Extract account information from Satellite and write configs
   block:
   - name: List all organizations in Satellite
@@ -34,7 +32,7 @@
       user: "{{ satellite_user }}"
       password: "{{ satellite_password }}"
       return_content: yes
-      validate_certs: no
+      validate_certs: "{{ satellite_validate_certs }}"
       force_basic_auth: yes
     register: sat_orgs_json
   - name: Extract organization configuration per account and save to disk
@@ -60,7 +58,7 @@
       user: "{{ satellite_user }}"
       password: "{{ satellite_password }}"
       return_content: yes
-      validate_certs: no
+      validate_certs: "{{ satellite_validate_certs }}"
       force_basic_auth: yes
     register: satellite_uuid_json
   - name: Extract Satellite ID from result

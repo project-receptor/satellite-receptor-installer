@@ -5,7 +5,7 @@
     user: "{{ satellite_user }}"
     password: "{{ satellite_password }}"
     return_content: yes
-    validate_certs: no
+    validate_certs: "{{ satellite_validate_certs }}"
     force_basic_auth: yes
   register: sat_org_detail
 - name: Extract x.509 certificate and key
@@ -18,7 +18,7 @@
     user: "{{ satellite_user }}"
     password: "{{ satellite_password }}"
     return_content: yes
-    validate_certs: no
+    validate_certs: "{{ satellite_validate_certs }}"
     force_basic_auth: yes
   register: sat_org_subscriptions
 - name: Extract Red Hat account ID
@@ -39,9 +39,14 @@
     dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/key.pem"
     mode: 0400
     src: key.pem.j2
+- name: Generate a UUID for this Receptor node
+  command: "uuidgen"
+  register: uuidgen_output
+- name: Set Receptor Node ID fact
+  set_fact:
+    receptor_uuid: "{{ uuidgen_output.stdout }}"
 - name: "Write Receptor configuration for account {{ sat_account_id }}"
   template:
     dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/receptor.conf"
     mode: 0644
     src: receptor.conf.j2
-

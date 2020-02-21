@@ -1,11 +1,10 @@
 ---
 - name: Extract node ID from configuration
-  debug:
-    msg: "FIXME"
-  register: receptor_node_id
+  set_fact:
+    receptor_node_id: "{{ lookup('ini', 'node_id section=receptor file='+receptor_config_dir+'/'+account_dir+'/receptor.conf') }}"
 - name: Create Source in c.rh.c
   uri:
-    url: "{{ c_rh_c_url }}api/sources/v1.0/sources"
+    url: "https://{{ c_rh_c_host }}/api/sources/v1.0/sources"
     client_cert: "{{ receptor_config_dir }}/{{ account_dir }}/cert.pem"
     client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
     method: "POST"
@@ -18,7 +17,7 @@
   register: source_create_response
 - name: Add endpoint to Source
   uri:
-    url: "{{ c_rh_c_url }}api/v1.0/endpoints"
+    url: "https://{{ c_rh_c_host }}/api/v1.0/endpoints"
     client_cert: "{{ receptor_config_dir }}/rh_{{ account_dir }}/cert.pem"
     client_key: "{{ receptor_config_dir }}/rh_{{ account_dir }}/key.pem"
     method: "POST"
