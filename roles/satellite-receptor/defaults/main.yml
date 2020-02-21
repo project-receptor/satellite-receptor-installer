@@ -2,5 +2,6 @@
 satellite_url: "https://satellite.example.com/"
 satellite_user: "fifi_user"
 satellite_password: "0p3ns3s4m3!"
+satellite_ca_file: "/etc/pki/tls/certs/ca-bundle.crt"
 receptor_config_dir: "/etc/receptor"
 c_rh_c_url: "https://cloud.redhat.com/"
