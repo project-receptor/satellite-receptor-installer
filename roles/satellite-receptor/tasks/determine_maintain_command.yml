@@ -1,0 +1,11 @@
+- name: Check if {{ item }} can be used for package locking
+  when: maintain_command is not defined
+  block:
+    - name: Check if {{ item }} is installed
+      command: "command -v {{ item }}"
+      register: maintain_test
+      ignore_errors: true
+    - name: Set {{ item }} to be used for package locking
+      set_fact:
+        maintain_command: "{{ item }}"
+      when: maintain_test.rc == 0
