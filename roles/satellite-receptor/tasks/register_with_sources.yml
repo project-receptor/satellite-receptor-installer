@@ -2,9 +2,19 @@
 - name: Extract node ID from configuration
   set_fact:
     receptor_node_id: "{{ lookup('ini', 'node_id section=receptor file='+receptor_config_dir+'/'+account_dir+'/receptor.conf') }}"
+- name: Identify Satellite source type
+  uri:
+    url: "https://{{ c_rh_c_host }}/api/sources/v2.0/source_types?name=satellite"
+    client_cert: "{{ receptor_config_dir }}/{{ account_dir }}/cert.pem"
+    client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
+    return_content: yes
+  register: source_types_response
+- name: Extract Satellite source type from response
+  set_fact:
+    source_type_id: "{{ source_types_response.json | json_query('data[0].id') }}"
 - name: Create Source in c.rh.c
   uri:
-    url: "https://{{ c_rh_c_host }}/api/sources/v1.0/sources"
+    url: "https://{{ c_rh_c_host }}/api/sources/v2.0/sources"
     client_cert: "{{ receptor_config_dir }}/{{ account_dir }}/cert.pem"
     client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
     method: "POST"
@@ -17,10 +27,12 @@
   register: source_create_response
 - name: Add endpoint to Source
   uri:
-    url: "https://{{ c_rh_c_host }}/api/v1.0/endpoints"
+    url: "https://{{ c_rh_c_host }}/api/v2.0/endpoints"
     client_cert: "{{ receptor_config_dir }}/rh_{{ account_dir }}/cert.pem"
     client_key: "{{ receptor_config_dir }}/rh_{{ account_dir }}/key.pem"
     method: "POST"
     body:
       source_id: "{{ source_create_response.json.id }}"
       receptor_node: "{{ receptor_node_id }}"
+      default: yes
+    body_format: json
