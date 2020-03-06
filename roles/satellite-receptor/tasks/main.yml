@@ -25,7 +25,7 @@
     debug:
       msg: "FIXME"
   - name: Unlock packages
-    command: "{{ maintain_command }} package unlock"
+    command: "{{ maintain_command }} packages unlock"
     when: maintain_command is defined
   - name: Install Receptor and Satellite Plugin RPMs
     yum:
@@ -33,7 +33,7 @@
       state: installed
     become: yes
   - name: Lock packages
-    command: "{{ maintain_command }} package lock"
+    command: "{{ maintain_command }} packages lock"
     when: maintain_command is defined
 - name: Extract account information from Satellite and write configs
   block:
