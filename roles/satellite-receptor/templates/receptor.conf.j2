@@ -11,5 +11,5 @@ ca_file={{ satellite_ca_file }}
 ssl_cert={{ receptor_config_dir }}/rh_{{ sat_account_id }}/cert.pem
 ssl_key={{ receptor_config_dir }}/rh_{{ sat_account_id }}/key.pem
 
-[peers]
-wss://{{ c_rh_c_host }}/wss/receptor-controller/gateway
+[node]
+peers=wss://{{ c_rh_c_host }}/wss/receptor-controller/gateway
