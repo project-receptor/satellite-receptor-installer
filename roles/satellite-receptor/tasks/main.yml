@@ -27,6 +27,10 @@
   - name: Unlock packages
     command: "{{ maintain_command }} packages unlock"
     when: maintain_command is defined
+  - name: Install role dependencies
+    yum:
+      name: python2-jmespath
+      state: installed
   - name: Install Receptor and Satellite Plugin RPMs
     yum:
       name: "{{ receptor_packages }}"
