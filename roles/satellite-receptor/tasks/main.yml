@@ -10,7 +10,7 @@
         password: "{{ satellite_password }}"
     - name: Can connect to cloud.redhat.com
       uri:
-        url: "https://{{ c_rh_c_host }}"
+        url: "https://{{ c_rh_c_host }}/api"
     - name: Receptor configuration directory exists
       file:
         path: "{{ receptor_config_dir }}"
@@ -44,7 +44,7 @@
   - name: Lock packages
     command: "{{ maintain_command }} packages lock"
     when: maintain_command is defined
-  when: "{{ install_receptor_from_rpm }}"
+  when: install_receptor_from_rpm|bool
 - name: Extract account information from Satellite and write configs
   block:
   - name: List all organizations in Satellite
@@ -58,7 +58,8 @@
     register: sat_orgs_json
   - name: Extract organization configuration per account and save to disk
     include_tasks: extract_orgs.yml
-    loop: "{{ sat_orgs_json.json | json_query('results[*].id')}}"
+    loop: "{{ sat_orgs_json.json | json_query('results[*].id') }}"
+    when: not org_id in skip_satellite_org_id_list
     loop_control:
       loop_var: org_id
   tags: query_satellite
