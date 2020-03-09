@@ -1,7 +1,7 @@
 ---
 - name: Extract node ID from configuration
   set_fact:
-    receptor_node_id: "{{ lookup('ini', 'node_id section=receptor file='+receptor_config_dir+'/'+account_dir+'/receptor.conf') }}"
+    receptor_node_id: "{{ lookup('ini', 'node_id section=default file='+receptor_config_dir+'/'+account_dir+'/receptor.conf') }}"
 - name: Identify Satellite source type
   uri:
     url: "https://{{ c_rh_c_host }}/api/sources/v2.0/source_types?name=satellite"

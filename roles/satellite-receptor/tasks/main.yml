@@ -19,6 +19,10 @@
       file:
         path: "{{ receptor_data_dir }}"
         state: directory
+    - name: Install role dependencies
+      yum:
+        name: python2-jmespath
+        state: installed
 - name: Determine which command to use for locking packages
   include_tasks: determine_maintain_command.yml
   loop:
@@ -32,10 +36,6 @@
   - name: Unlock packages
     command: "{{ maintain_command }} packages unlock"
     when: maintain_command is defined
-  - name: Install role dependencies
-    yum:
-      name: python2-jmespath
-      state: installed
   - name: Install Receptor and Satellite Plugin RPMs
     yum:
       name: "{{ receptor_packages }}"
@@ -108,3 +108,4 @@
       state: started
     loop: "{{ account_dirs }}"
   tags: install_into_systemd
+  become: yes
