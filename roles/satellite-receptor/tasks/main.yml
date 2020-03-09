@@ -8,12 +8,21 @@
         force_basic_auth: true
         validate_certs: "{{ satellite_validate_certs }}"
         password: "{{ satellite_password }}"
-    - name: User has permissions to read organizations and run Ansible playbooks
-      debug:
-        msg: "FIXME"
     - name: Can connect to cloud.redhat.com
-      debug:
-        msg: "FIXME"
+      uri:
+        url: "https://{{ c_rh_c_host }}/api"
+    - name: Receptor configuration directory exists
+      file:
+        path: "{{ receptor_config_dir }}"
+        state: directory
+    - name: Receptor data directory exists
+      file:
+        path: "{{ receptor_data_dir }}"
+        state: directory
+    - name: Install role dependencies
+      yum:
+        name: python2-jmespath
+        state: installed
 - name: Determine which command to use for locking packages
   include_tasks: determine_maintain_command.yml
   loop:
@@ -27,10 +36,6 @@
   - name: Unlock packages
     command: "{{ maintain_command }} packages unlock"
     when: maintain_command is defined
-  - name: Install role dependencies
-    yum:
-      name: python2-jmespath
-      state: installed
   - name: Install Receptor and Satellite Plugin RPMs
     yum:
       name: "{{ receptor_packages }}"
@@ -39,6 +44,7 @@
   - name: Lock packages
     command: "{{ maintain_command }} packages lock"
     when: maintain_command is defined
+  when: install_receptor_from_rpm|bool
 - name: Extract account information from Satellite and write configs
   block:
   - name: List all organizations in Satellite
@@ -52,7 +58,8 @@
     register: sat_orgs_json
   - name: Extract organization configuration per account and save to disk
     include_tasks: extract_orgs.yml
-    loop: "{{ sat_orgs_json.json | json_query('results[*].id')}}"
+    loop: "{{ sat_orgs_json.json | json_query('results[*].id') }}"
+    when: not org_id in skip_satellite_org_id_list
     loop_control:
       loop_var: org_id
   tags: query_satellite
@@ -84,6 +91,7 @@
     loop: "{{ account_dirs }}"
     loop_control:
       loop_var: account_dir
+  tags: register_with_sources
 - name: Create Receptor systemd unit files per account and start them
   block:
   - name: Generate template unit file
@@ -99,3 +107,5 @@
       enabled: yes
       state: started
     loop: "{{ account_dirs }}"
+  tags: install_into_systemd
+  become: yes
