@@ -12,4 +12,4 @@ receptor_packages:
   - python3-receptor-satellite
 c_rh_c_host: "cert.cloud.redhat.com"
 skip_satellite_org_id_list:
-  - 1
+  - 0
