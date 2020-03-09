@@ -1,38 +1,34 @@
-Role Name
-=========
+Satellite Receptor Installer
+============================
 
-A brief description of the role goes here.
+An installer playbook for setting up Satellite 7 with a Receptor node connected to cloud.redhat.com
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role requires Receptor and python2-jmespath be installed on the system.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+* `install_receptor_from_rpm` - Whether you want the role to install Receptor for you (default: `yes`)
+* `satellite_url` - The base URL for the Satellite API (default: `https://satellite.example.com/`)
+* `satellite_user` - The user to connect to the Satellite API with (default: `fifi_user`)
+* `satellite_password` - The password to authenticate against the Satellite API with (default: `0p3ns3s4m3!`)
+* `satellite_ca_file` - The path to the CA file to validate Satellite's certificate (default: `/etc/pki/tls/certs/ca-bundle.crt`)
+* `satellite_validate_certs` - Whether to validate the Satellite certificate is trusted (default: `yes`)
+* `receptor_config_dir` - The path to Receptor's configuration files (default: `/etc/receptor`)
+* `receptor_data_dir` - The path to Receptor's data files (default: `/var/data/receptor`)
+* `receptor_packages` - The packages required to be installed for Receptor to work (default: `receptor` and `python3-receptor-satellite`)
+* `c_rh_c_host` - The API endpoint to connect to for cloud.redhat.com (default: `cert.cloud.redhat.com`)
+* `skip_satellite_org_id_list` - A list of Satellite organizations to skip during setup
 
 License
 -------
 
-BSD
+GPLv3
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This role is written and maintained by Red Hat.
