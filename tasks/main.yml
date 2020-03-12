@@ -3,7 +3,7 @@
   block:
     - name: Can connect to the Satellite with the given username/password
       uri:
-        url: "{{ satellite_url }}api/status"
+        url: "{{ satellite_url }}/api/status"
         user: "{{ satellite_user }}"
         force_basic_auth: true
         validate_certs: "{{ satellite_validate_certs }}"
@@ -49,7 +49,7 @@
   block:
   - name: List all organizations in Satellite
     uri:
-      url: "{{ satellite_url }}katello/api/organizations"
+      url: "{{ satellite_url }}/katello/api/organizations"
       user: "{{ satellite_user }}"
       password: "{{ satellite_password }}"
       return_content: yes
@@ -76,7 +76,7 @@
       account_dirs: "{{ account_dirs_full_path | json_query('files[*].path') | map('basename') | list }}"
   - name: Identify Satellite ID from Satellite
     uri: 
-      url: "{{ satellite_url }}api/settings?search=name%20%3D%20instance_id"
+      url: "{{ satellite_url }}/api/settings?search=name%20%3D%20instance_id"
       user: "{{ satellite_user }}"
       password: "{{ satellite_password }}"
       return_content: yes
