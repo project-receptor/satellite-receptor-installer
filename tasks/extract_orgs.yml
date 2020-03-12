@@ -1,7 +1,7 @@
 ---
 - name: Get organization detail
   uri:
-    url: "{{ satellite_url }}katello/api/organizations/{{ org_id }}"
+    url: "{{ satellite_url }}/katello/api/organizations/{{ org_id }}"
     user: "{{ satellite_user }}"
     password: "{{ satellite_password }}"
     return_content: yes
@@ -14,7 +14,7 @@
     sat_x509_key: "{{ sat_org_detail.json | json_query('owner_details.upstreamConsumer.idCert.key') }}"
 - name: Get organization subscriptions
   uri:
-    url: "{{ satellite_url }}katello/api/organizations/{{ org_id }}/subscriptions"
+    url: "{{ satellite_url }}/katello/api/organizations/{{ org_id }}/subscriptions"
     user: "{{ satellite_user }}"
     password: "{{ satellite_password }}"
     return_content: yes

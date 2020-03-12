@@ -8,8 +8,8 @@ url={{ satellite_url }}
 ca_file={{ satellite_ca_file }}
 
 [auth]
-ssl_cert={{ receptor_config_dir }}/rh_{{ sat_account_id }}/cert.pem
-ssl_key={{ receptor_config_dir }}/rh_{{ sat_account_id }}/key.pem
+client_cert={{ receptor_config_dir }}/rh_{{ sat_account_id }}/cert.pem
+client_key={{ receptor_config_dir }}/rh_{{ sat_account_id }}/key.pem
 
 [node]
 peers=wss://{{ c_rh_c_host }}/wss/receptor-controller/gateway
