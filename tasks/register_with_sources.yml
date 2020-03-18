@@ -14,7 +14,7 @@
     source_type_id: "{{ source_types_response.json | json_query('data[0].id') }}"
 - name: See if source already exists
   uri:
-    url: "https://{{ c_rh_c_host }}/api/sources/v2.0/sources?name=Satellite%20{{ satellite_uuid }}"
+    url: "https://{{ c_rh_c_host }}/api/sources/v2.0/sources?source_ref={{ satellite_uuid }}"
     client_cert: "{{ receptor_config_dir }}/{{ account_dir }}/cert.pem"
     client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
     return_content: yes
@@ -26,7 +26,7 @@
     client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
     method: "POST"
     body:
-      name: "Satellite {{ satellite_uuid }}"
+      name: "{{ satellite_url|urlsplit('hostname') }}"
       source_type_id: "{{ source_type_id }}"
       source_ref: "{{ satellite_uuid }}"
     body_format: json
@@ -58,10 +58,42 @@
     client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
     method: "POST"
     body:
-      source_id: "{{ source_create_response.json.id }}"
+      source_id: "{{ source_id }}"
       receptor_node: "{{ receptor_node_id }}"
       default: yes
     body_format: json
     status_code:
       - 201
   when: existing_endpoint_response.json.meta.count == 0
+- name: Identify application type ID
+  uri:
+    url: "https://{{ c_rh_c_host }}/api/sources/v2.0/application_types?name=%2Finsights%2Fplatform%2Ffifi"
+    client_cert: "{{ receptor_config_dir }}/{{ account_dir }}/cert.pem"
+    client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
+    return_content: yes
+  register: application_types_response
+- name: Set application type ID fact
+  set_fact:
+    application_type_id: "{{ application_types_response.json | json_query('data[0].id') }}"
+- name: See if application already exists
+  uri:
+    url: "https://{{ c_rh_c_host }}/api/sources/v2.0/applications?source_id={{ source_id }}&application_type_id={{ application_type_id }}"
+    client_cert: "{{ receptor_config_dir }}/{{ account_dir }}/cert.pem"
+    client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
+    return_content: yes
+  register: existing_application_response
+- name: Add application to Source
+  uri:
+    url: "https://{{ c_rh_c_host }}/api/sources/v2.0/applications"
+    client_cert: "{{ receptor_config_dir }}/{{ account_dir }}/cert.pem"
+    client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
+    method: "POST"
+    body:
+      source_id: "{{ source_id }}"
+      application_type_id: "{{ application_type_id }}"
+    body_format: json
+    status_code:
+      - 201
+  when: existing_application_response.json.meta.count == 0
+
+  
