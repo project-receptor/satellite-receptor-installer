@@ -26,7 +26,7 @@
     client_key: "{{ receptor_config_dir }}/{{ account_dir }}/key.pem"
     method: "POST"
     body:
-      name: "{{ satellite_url|urlsplit('hostname') }}"
+      name: "{{ source_display_name }}"
       source_type_id: "{{ source_type_id }}"
       source_ref: "{{ satellite_uuid }}"
     body_format: json
