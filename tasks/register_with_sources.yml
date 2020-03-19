@@ -96,5 +96,3 @@
     status_code:
       - 201
   when: existing_application_response.json.meta.count == 0
-
-  
