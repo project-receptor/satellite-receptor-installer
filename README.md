@@ -22,6 +22,7 @@ Role Variables
 * `receptor_packages` - The packages required to be installed for Receptor to work (default: `receptor` and `python3-receptor-satellite`)
 * `c_rh_c_host` - The API endpoint to connect to for cloud.redhat.com (default: `cert.cloud.redhat.com`)
 * `skip_satellite_org_id_list` - A list of Satellite organizations to skip during setup
+* `source_display_name` - The name for this Satellite in Sources on cloud.redhat.com (default: the hostname of the `satellite_url`)
 
 License
 -------

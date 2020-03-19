@@ -33,6 +33,11 @@
       path: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}"
       state: directory
       mode: 0755
+  - name: "Make a data directory for account {{ sat_account_id }}"
+    file:
+      path: "{{ receptor_data_dir }}/rh_{{ sat_account_id }}"
+      state: directory
+      mode: 0755
   - name: "Write x.509 certificate for account {{ sat_account_id }}"
     template:
       dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/cert.pem"
@@ -44,11 +49,9 @@
       mode: 0400
       src: key.pem.j2
   - name: Generate a UUID for this Receptor node
-    command: "uuidgen"
-    register: uuidgen_output
-  - name: Set Receptor Node ID fact
-    set_fact:
-      receptor_uuid: "{{ uuidgen_output.stdout }}"
+    shell: "uuidgen > {{ receptor_config_dir }}/rh_{{ sat_account_id }}/uuid"
+    args:
+      creates: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/uuid"
   - name: "Write Receptor configuration for account {{ sat_account_id }}"
     template:
       dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/receptor.conf"
