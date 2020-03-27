@@ -55,6 +55,6 @@
   - name: "Write Receptor configuration for account {{ sat_account_id }}"
     template:
       dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/receptor.conf"
-      mode: 0644
+      mode: 0400
       src: receptor.conf.j2
   when: sat_account_id != ""
