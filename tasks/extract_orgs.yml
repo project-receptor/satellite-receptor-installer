@@ -52,6 +52,8 @@
     shell: "uuidgen > {{ receptor_config_dir }}/rh_{{ sat_account_id }}/uuid"
     args:
       creates: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/uuid"
+  - name: "Load Receptor node uuid"
+    include_tasks: read_receptor_node_uuid.yml
   - name: "Write Receptor configuration for account {{ sat_account_id }}"
     template:
       dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/receptor.conf"
