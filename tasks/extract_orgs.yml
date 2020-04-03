@@ -56,5 +56,6 @@
     template:
       dest: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/receptor.conf"
       mode: 0400
+      owner: foreman-proxy
       src: receptor.conf.j2
   when: sat_account_id != ""
