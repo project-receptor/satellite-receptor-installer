@@ -4,3 +4,6 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/receptor -c {{receptor_config_dir}}/%i/receptor.conf -d {{receptor_data_dir}}/%i node
+
+[Install]
+WantedBy=multi-user.target
