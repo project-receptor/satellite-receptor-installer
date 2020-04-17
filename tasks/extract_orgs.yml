@@ -23,7 +23,7 @@
   register: sat_org_subscriptions
 - name: Extract Red Hat account ID
   set_fact:
-    sat_account_id: "{{ sat_org_subscriptions.json | json_query('results[0].account_number') }}"
+    sat_account_id: "{{ sat_org_subscriptions.json | json_query('results[?account_number != null] | [0].account_number') }}"
 - name: If an account number is findable
   block:
   - debug:
