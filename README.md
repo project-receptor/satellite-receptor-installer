@@ -23,7 +23,6 @@ Role Variables
 * `c_rh_c_host` - The API endpoint to connect to for cloud.redhat.com (default: `cert.cloud.redhat.com`)
 * `skip_satellite_org_id_list` - A list of Satellite organizations to skip during setup
 * `source_display_name` - The name for this Satellite in Sources on cloud.redhat.com (default: the hostname of the `satellite_url`)
-* `websocket_heartbeat_interval` - The number of seconds to wait before sending a ping to verify connection to cloud.redhat.com (default: 1800)
 
 License
 -------
