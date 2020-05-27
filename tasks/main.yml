@@ -47,15 +47,25 @@
   when: install_receptor_from_rpm|bool
 - name: Retrieve organization details
   block:
+    - name: Create a temporary file
+      tempfile:
+        state: file
+      register: tempfile
+    - name: Set correct permissions and ownership for temporary file
+      file:
+        path: "{{ tempfile.path }}"
+        mode: 0600
+        owner: foreman
+        group: foreman
     - name: Dump organization details
-      command: foreman-rake katello:receptor:extract_orgs OUTPUT_FILE=/tmp/receptor.json
+      command: foreman-rake katello:receptor:extract_orgs OUTPUT_FILE={{ tempfile.path }}
     - name: Retrieve dumped organization details
       slurp:
-        src: /tmp/receptor.json
+        src: "{{ tempfile.path }}"
       register: org_details
     - name: Remove dumped organization details
       file:
-        path: /tmp/receptor.json
+        path: "{{ tempfile.path }}"
         state: absent
   tags: query_satellite
 - name: Extract account information from Satellite and write configs
