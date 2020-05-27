@@ -37,5 +37,4 @@
       mode: 0400
       owner: foreman-proxy
       src: receptor.conf.j2
-  when: sat_account_id != ""
   tags: query_satellite
