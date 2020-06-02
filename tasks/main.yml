@@ -45,23 +45,35 @@
     command: "{{ maintain_command }} packages lock"
     when: maintain_command is defined
   when: install_receptor_from_rpm|bool
-- name: Extract account information from Satellite and write configs
+- name: Retrieve organization details
   block:
-  - name: List all organizations in Satellite
-    uri:
-      url: "{{ satellite_url }}/katello/api/organizations"
-      user: "{{ satellite_user }}"
-      password: "{{ satellite_password }}"
-      return_content: yes
-      validate_certs: "{{ satellite_validate_certs }}"
-      force_basic_auth: yes
-    register: sat_orgs_json
-  - name: Extract organization configuration per account and save to disk
-    include_tasks: extract_orgs.yml
-    loop: "{{ sat_orgs_json.json | json_query('results[*].id') }}"
-    when: not org_id in skip_satellite_org_id_list
-    loop_control:
-      loop_var: org_id
+    - name: Create a temporary file
+      tempfile:
+        state: file
+      register: tempfile
+    - name: Set correct permissions and ownership for temporary file
+      file:
+        path: "{{ tempfile.path }}"
+        mode: 0600
+        owner: foreman
+        group: foreman
+    - name: Dump organization details
+      command: foreman-rake katello:receptor:extract_orgs OUTPUT_FILE={{ tempfile.path }}
+    - name: Retrieve dumped organization details
+      slurp:
+        src: "{{ tempfile.path }}"
+      register: org_details
+    - name: Remove dumped organization details
+      file:
+        path: "{{ tempfile.path }}"
+        state: absent
+  tags: query_satellite
+- name: Extract account information from Satellite and write configs
+  include_tasks: extract_orgs.yml
+  loop: "{{ org_details['content'] | b64decode }}"
+  when: organization.id not in skip_satellite_org_id_list
+  loop_control:
+    loop_var: organization
   tags: query_satellite
 - name: Register Satellite and Receptor with Sources
   block:
@@ -75,7 +87,7 @@
     set_fact:
       account_dirs: "{{ account_dirs_full_path | json_query('files[*].path') | map('basename') | list }}"
   - name: Identify Satellite ID from Satellite
-    uri: 
+    uri:
       url: "{{ satellite_url }}/api/settings?search=name%20%3D%20instance_id"
       user: "{{ satellite_user }}"
       password: "{{ satellite_password }}"
