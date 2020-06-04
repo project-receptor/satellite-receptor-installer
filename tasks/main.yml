@@ -11,6 +11,9 @@
     - name: Can connect to cloud.redhat.com
       uri:
         url: "https://{{ c_rh_c_host }}/api"
+      environment:
+        http_proxy: "{{ http_proxy }}"
+        https_proxy: "{{ http_proxy }}"
     - name: Receptor configuration directory exists
       file:
         path: "{{ receptor_config_dir }}"
@@ -99,10 +102,13 @@
     set_fact:
       satellite_uuid: "{{ satellite_uuid_json | json_query('json.results[0].value') }}"
   - name: Set up Source with c.rh.c for each account
-    include_tasks: register_with_sources.yml
+    import_tasks: register_with_sources.yml
     loop: "{{ account_dirs }}"
     loop_control:
       loop_var: account_dir
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
   tags: register_with_sources
 - name: Create Receptor systemd unit files per account and start them
   block:
