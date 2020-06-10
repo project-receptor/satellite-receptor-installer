@@ -1,7 +1,6 @@
 ---
-- name: Extract node ID from configuration
-  set_fact:
-    receptor_node_id: "{{ lookup('ini', 'node_id section=default file='+receptor_config_dir+'/'+account_dir+'/receptor.conf') }}"
+- name: "Load Receptor node uuid"
+  include_tasks: read_receptor_node_uuid.yml
 - name: Identify Satellite source type
   uri:
     url: "https://{{ c_rh_c_host }}/api/sources/v2.0/source_types?name=satellite"
@@ -60,7 +59,7 @@
     method: "POST"
     body:
       source_id: "{{ source_id }}"
-      receptor_node: "{{ receptor_node_id }}"
+      receptor_node: "{{ receptor_node_uuid }}"
       default: yes
     body_format: json
     status_code:

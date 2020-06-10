@@ -1,0 +1,7 @@
+- name: Read Receptor node UUID
+  slurp:
+    src: "{{ receptor_config_dir }}/rh_{{ sat_account_id }}/uuid"
+  register: node_uuid
+- name: Save Receptor node UUID
+  set_fact:
+    receptor_node_uuid: "{{ node_uuid['content'] | b64decode }}"
