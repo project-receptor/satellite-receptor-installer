@@ -23,6 +23,7 @@ Role Variables
 * `c_rh_c_host` - The API endpoint to connect to for cloud.redhat.com (default: `cert.cloud.redhat.com`)
 * `skip_satellite_org_id_list` - A list of Satellite organizations to skip during setup
 * `source_display_name` - The name for this Satellite in Sources on cloud.redhat.com (default: the hostname of the `satellite_url`)
+* `http_proxy` - HTTP Proxy to used when talking to cloud.redhat.com (default: "", e.g. do not use any proxy)
 
 License
 -------

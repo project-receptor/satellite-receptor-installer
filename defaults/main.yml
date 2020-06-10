@@ -14,3 +14,4 @@ c_rh_c_host: "cert.cloud.redhat.com"
 skip_satellite_org_id_list:
   - 0
 source_display_name: "{{ satellite_url|urlsplit('hostname') }}"
+http_proxy: ""
