@@ -102,13 +102,10 @@
     set_fact:
       satellite_uuid: "{{ satellite_uuid_json | json_query('json.results[0].value') }}"
   - name: Set up Source with c.rh.c for each account
-    import_tasks: register_with_sources.yml
+    include_tasks: register_with_sources.yml
     loop: "{{ account_dirs }}"
     loop_control:
       loop_var: account_dir
-    environment:
-      http_proxy: "{{ http_proxy }}"
-      https_proxy: "{{ http_proxy }}"
   tags: register_with_sources
 - name: Create Receptor systemd unit files per account and start them
   block:
