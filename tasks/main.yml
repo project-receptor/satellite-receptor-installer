@@ -33,9 +33,6 @@
     - foreman-maintain
 - name: Install Receptor and Satellite Plugin RPMs
   block:
-  - name: Ensure RPM repository is configured and enabled
-    debug:
-      msg: "FIXME"
   - name: Unlock packages
     command: "{{ maintain_command }} packages unlock"
     when: maintain_command is defined
