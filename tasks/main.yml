@@ -106,6 +106,15 @@
   tags: register_with_sources
 - name: Create Receptor systemd unit files per account and start them
   block:
+  - name: Genereate environment files
+    copy:
+      dest: "{{ receptor_config_dir }}/{{ account_dir }}/receptor.env"
+      content: |
+        HTTP_PROXY={{ http_proxy }}
+        HTTPS_PROXY={{ http_proxy }}
+    loop: "{{ account_dirs }}"
+    loop_control:
+      loop_var: account_dir
   - name: Generate template unit file
     template:
       src: receptor@.service.j2

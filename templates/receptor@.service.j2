@@ -4,8 +4,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/receptor -c {{receptor_config_dir}}/%i/receptor.conf -d {{receptor_data_dir}}/%i node
-Environment=HTTP_PROXY="{{ http_proxy }}"
-Environment=HTTPS_PROXY="{{ http_proxy }}"
+EnvironmentFile=-{{ receptor_config_dir }}/%i/receptor.env
 
 [Install]
 WantedBy=multi-user.target
