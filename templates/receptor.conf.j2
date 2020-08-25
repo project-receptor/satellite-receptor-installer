@@ -2,14 +2,14 @@
 node_id={{ lookup('file', receptor_config_dir+'/rh_'+sat_account_id+'/uuid') }}
 
 [plugin_receptor_satellite]
-username={{ satellite_user }}
-password={{ satellite_password }}
+username={{ satellite_user | regex_replace('%', '%%') }}
+password={{ satellite_password | regex_replace('%', '%%') }}
 url={{ satellite_url }}
-ca_file={{ satellite_ca_file }}
+ca_file={{ satellite_ca_file | regex_replace('%', '%%') }}
 
 [auth]
-client_cert={{ receptor_config_dir }}/rh_{{ sat_account_id }}/cert.pem
-client_key={{ receptor_config_dir }}/rh_{{ sat_account_id }}/key.pem
+client_cert={{ receptor_config_dir | regex_replace('%', '%%') }}/rh_{{ sat_account_id }}/cert.pem
+client_key={{ receptor_config_dir | regex_replace('%', '%%') }}/rh_{{ sat_account_id }}/key.pem
 
 [node]
 peers=wss://{{ c_rh_c_host }}/wss/receptor-controller/gateway

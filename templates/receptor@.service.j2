@@ -3,8 +3,8 @@ Description=Receptor Node for %i
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/receptor -c {{receptor_config_dir}}/%i/receptor.conf -d {{receptor_data_dir}}/%i node
-EnvironmentFile=-{{ receptor_config_dir }}/%i/receptor.env
+ExecStart=/usr/bin/receptor -c {{ receptor_config_dir | regex_replace('%', '%%') }}/%i/receptor.conf -d {{ receptor_data_dir | regex_replace('%', '%%') }}/%i node
+EnvironmentFile=-{{ receptor_config_dir | regex_replace('%', '%%') }}/%i/receptor.env
 
 [Install]
 WantedBy=multi-user.target
