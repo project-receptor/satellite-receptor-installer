@@ -6,7 +6,7 @@ An installer playbook for setting up Satellite with a Receptor node connected to
 Requirements
 ------------
 
-This role requires Receptor and python2-jmespath be installed on the system.
+This role requires Receptor be installed on the system.
 
 Role Variables
 --------------
