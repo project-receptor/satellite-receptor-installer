@@ -22,10 +22,6 @@
       file:
         path: "{{ receptor_data_dir }}"
         state: directory
-    - name: Install role dependencies
-      yum:
-        name: python2-jmespath
-        state: installed
 - name: Determine which command to use for locking packages
   include_tasks: determine_maintain_command.yml
   loop:
@@ -85,7 +81,7 @@
     register: account_dirs_full_path
   - name: Extract account dirs
     set_fact:
-      account_dirs: "{{ account_dirs_full_path | json_query('files[*].path') | map('basename') | list }}"
+      account_dirs: "{{ account_dirs_full_path.files | map(attribute='path') | map('basename') | list }}"
   - name: Identify Satellite ID from Satellite
     uri:
       url: "{{ satellite_url }}/api/settings?search=name%20%3D%20instance_id"
@@ -97,7 +93,7 @@
     register: satellite_uuid_json
   - name: Extract Satellite ID from result
     set_fact:
-      satellite_uuid: "{{ satellite_uuid_json | json_query('json.results[0].value') }}"
+      satellite_uuid: "{{ satellite_uuid_json.json.results[0].value }}"
   - name: Set up Source with c.rh.c for each account
     include_tasks: register_with_sources.yml
     loop: "{{ account_dirs }}"

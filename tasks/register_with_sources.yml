@@ -16,7 +16,7 @@
       register: source_types_response
     - name: Extract Satellite source type from response
       set_fact:
-        source_type_id: "{{ source_types_response.json | json_query('data[0].id') }}"
+        source_type_id: "{{ source_types_response.json.data[0].id }}"
     - name: See if source already exists
       uri:
         url: "https://{{ c_rh_c_host }}/api/sources/v2.0/sources?source_ref={{ satellite_uuid }}"
@@ -46,7 +46,7 @@
       when: existing_source_response.json.meta.count == 0
     - name: Set source ID fact (pre-existing)
       set_fact:
-        source_id: "{{ existing_source_response.json | json_query('data[0].id') }}"
+        source_id: "{{ existing_source_response.json.data[0].id }}"
       when: existing_source_response.json.meta.count != 0
     - debug:
         msg: "Source ID {{ source_id }}"
@@ -80,7 +80,7 @@
       register: application_types_response
     - name: Set application type ID fact
       set_fact:
-        application_type_id: "{{ application_types_response.json | json_query('data[0].id') }}"
+        application_type_id: "{{ application_types_response.json.data[0].id }}"
     - name: See if application already exists
       uri:
         url: "https://{{ c_rh_c_host }}/api/sources/v2.0/applications?source_id={{ source_id }}&application_type_id={{ application_type_id }}"
