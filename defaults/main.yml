@@ -15,3 +15,4 @@ skip_satellite_org_id_list:
   - 0
 source_display_name: "{{ satellite_url|urlsplit('hostname') }}"
 http_proxy: ""
+cloud_connector_enabled: true
