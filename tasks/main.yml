@@ -121,8 +121,8 @@
   - name: Enable Receptor systemd units
     systemd:
       unit: "receptor@{{ item }}.service"
-      enabled: yes
-      state: started
+      enabled: "{{ cloud_connector_enabled }}"
+      state: "{{ cloud_connector_enabled | ternary('started', 'stopped') }}"
     loop: "{{ account_dirs }}"
   tags: install_into_systemd
   become: yes
