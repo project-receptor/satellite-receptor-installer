@@ -41,6 +41,11 @@
     command: "{{ maintain_command }} packages lock"
     when: maintain_command is defined
   when: install_receptor_from_rpm|bool
+# insights-client should be pulled in as dependency of receptor-satellite
+- name: Register Satellite into insights
+  command: insights-client --register
+  register: registration
+  changed_when: "'Successfully registered' in registration.stdout"
 - name: Retrieve organization details
   block:
     - name: Create a temporary file
