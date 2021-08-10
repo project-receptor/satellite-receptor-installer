@@ -18,10 +18,12 @@
       file:
         path: "{{ receptor_config_dir }}"
         state: directory
+        mode: 0755
     - name: Receptor data directory exists
       file:
         path: "{{ receptor_data_dir }}"
         state: directory
+        mode: 0755
 - name: Determine which command to use for locking packages
   include_tasks: determine_maintain_command.yml
   loop:
@@ -41,6 +43,11 @@
     command: "{{ maintain_command }} packages lock"
     when: maintain_command is defined
   when: install_receptor_from_rpm|bool
+# insights-client should be pulled in as dependency of receptor-satellite
+- name: Register Satellite into insights
+  command: insights-client --register
+  register: registration
+  changed_when: "'Successfully registered' in registration.stdout"
 - name: Retrieve organization details
   block:
     - name: Create a temporary file
@@ -108,6 +115,7 @@
       content: |
         HTTP_PROXY={{ http_proxy }}
         HTTPS_PROXY={{ http_proxy }}
+      mode: 0644
     loop: "{{ account_dirs }}"
     loop_control:
       loop_var: account_dir
@@ -115,6 +123,7 @@
     template:
       src: receptor@.service.j2
       dest: /etc/systemd/system/receptor@.service
+      mode: 0644
   - name: Reload systemd units
     systemd:
       daemon_reload: yes
