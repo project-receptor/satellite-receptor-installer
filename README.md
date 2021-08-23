@@ -1,7 +1,7 @@
 Satellite Receptor Installer
 ============================
 
-An installer playbook for setting up Satellite with a Receptor node connected to cloud.redhat.com
+An installer playbook for setting up Satellite with a Receptor node connected to console.redhat.com
 
 Requirements
 ------------
