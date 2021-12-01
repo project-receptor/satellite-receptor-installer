@@ -131,7 +131,7 @@
     systemd:
       unit: "receptor@{{ item }}.service"
       enabled: yes
-      state: started
+      state: restarted
     loop: "{{ account_dirs }}"
   tags: install_into_systemd
   become: yes
